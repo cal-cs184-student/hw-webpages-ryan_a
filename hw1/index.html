@@ -32,11 +32,11 @@
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-ryan_a">cal-cs184-student.github.io/hw-webpages-ryan_a</a>
 		
 		<br>
 
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw1-ryana">github.com/cal-cs184-student/sp25-hw1-ryana</a>
 
 		<figure>
 			<img src="lion.jpg" alt="Lion" style="width:50%"/>
@@ -51,8 +51,11 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		To rasterize a single-color triangle, we simply need to find which pixels fall inside the triangle, and set the color of those pixels in the framebuffer to that of the triangle. I did this process in three steps:
+		<ol>
+			<li>Find the bounding box of the triangle by taking the mins and maxs of the x and y coordinates of the triangle's vertices. This saves us from looping through all pixels in the framebuffer, as only pixels withing the bounding box can possibly be inside the triangle.</li>
+			<li>For every pixel in the bounding box, perform three "line tests" to check if the pixel's center point lies within the triangle. What a "line test" does is check if a point (the pixel's center) falls on the left or right hand side of the vector between point 1 and point 2 (two of the triangles vertices). This is done by first rotating the vector from point 0 to point 1 counter-clockwise by 90 degrees as (x,y) -> (-y,x), giving us the vector facing left of our original vector. Then, project the vector between point 0 and the pixels center point onto this left vector by taking a dot product. If this dot product is positive, the pixel is on the left side of the vector, and if it's negative it's on the right. If it is 0, the pixel's centerwas directly on the line, which my implementation considers to be inside the triangle.</x></li>
+		</ol>
 		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
