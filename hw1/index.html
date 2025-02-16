@@ -54,27 +54,27 @@
 		To rasterize a single-color triangle, we simply need to find which pixels fall inside the triangle, and set the color of those pixels in the framebuffer to that of the triangle. I implemented this process in three steps:
 		<ol>
 			<li>Find the bounding box of the triangle by taking the mins and maxs of the x and y coordinates of the triangle's vertices. This saves us from looping through all pixels in the framebuffer, as only pixels withing the bounding box can possibly be inside the triangle.</li>
-			<li>For every pixel in the bounding box, perform three "line tests" to check if the pixel's center point lies within the triangleL
+			<li>For every pixel in the bounding box, perform three "line tests" to check if the pixel's center point lies within the triangle
 				<ul>
-				<li>What a "line test" does is check if a point (the pixel's center) falls on the left or right hand side of the vector between point 0 and point 1 (two of the triangles vertices).This is done by first rotating the vector from point 0 to point 1 counter-clockwise by 90 degrees as (x,y) -> (-y,x), giving us the vector facing left of our original vector. Then, project the vector between point 0 and the pixels center point onto this left vector by taking a dot product. If this dot product is positive, the pixel is on the left side of the vector, and if it's negative it's on the right. If it is 0, the pixel's center is directly on the line, which my implementation considers to be inside the triangle.</li>
+				<li>What a "line test" does is check if a point (the pixel's center) falls on the left or right hand side of the vector between point 0 and point 1 (two of the triangles vertices). This is done by first rotating the vector from point 0 to point 1 counter-clockwise by 90 degrees as (x,y) -> (-y,x), giving us the vector facing left of our original vector. Then, project the vector between point 0 and the pixel's center point onto this left vector by taking a dot product. If this dot product is positive, the pixel is on the left side of the vector, and if it's negative it's on the right. If it is 0, the pixel's center is directly on the line, which my implementation considers to be inside the triangle.</li>
 				<li>Now, I perform three of these line tests using the three vectors wrapping around the triangle from vertice 0 to 1 to 2. If the triangle has clockwise winding (figure 1), the pixel must be on the right hand side of all three vectors, so all three line tests must return <= 0 for the point to be inside the triangle. If the triangle has counter-clockwise winding (figure 2), all line tests must return >= 0. Thus, if the line tests are either all positive or all negative, my implementation can say that the point is inside the triangle, without ever having to find which way the triangle is wound.</li>
 				</ul>
 			</li>
 			<li>If the pixel's center was found to be inside the triangle, simply color that pixel in the framebuffer.</li>
 		</ol>
 		My implementation is no slower than one that checks each pixel in the bounding box, as that is what my implementation does.
-		An interesting result of this method of triangle rasterization can be seen in figure 3, where a very thin triangle can be split into parts. The explanation for this simply that that missing part of the triangle squeezed in between the pixel's centers, and thus was not rendered. This is shown in figure 4.
+		An interesting result of this method of triangle rasterization can be seen in figure 4, where a very thin triangle can be split into parts. The explanation for this simply that that missing part of the triangle squeezed in between the pixel's centers in that area, and thus was not rendered.
 		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <figcaption>Fig 1: Clockwise wound triangle.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <figcaption>Fig 2: Counter-Clockwise wound triangle.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
