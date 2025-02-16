@@ -100,27 +100,43 @@
 		</div>
 		
 		<h2>Task 2: Antialiasing by Supersampling</h2>
+		<p>
+		Supersampling is a technique in which a scene is rendered at a higher resolution, then downsampled back to the original resolution. 
+		My implementation does this by rendering the points, lines, and triangles to a higher resolution buffer (sample_buffer), which is then downsampled by averaging as it is written into the frame_buffer to be displayed on the screen.
+		The benefit of this is that it can reduce aliasing problem like jagged triangle edges or texture aliasing problems by increasing our sampling frequency.
+		The downside is a large performance cost due to having to render at a higher resolution.
+		</p>
+		For my implementation, I first had to handle changing the dimensions of the sample_buffer.
+		This only required minor modifications to RasterizerImp::set_sample_rate() and RasterizerImp::set_framebuffer_target(), where I multiplied the buffer's size by the supersampling rate.
+		The next step was to implement the downsampling when the sample_buffer is used to fill the framebuffer, which I did in RasterizerImp::resolve_to_framebuffer().
+		Here, every pixel in the frame_buffer is filled with the average color of all the pixels in the sample_buffer that it covers.
+		Next, I fixed the fact that rendering points and lines had been broken by the supersampling (since points and lines were only 1 pixel wide in the sample_buffer, they ended up much more faint after downsampling).
+		To fix this I modified fill_pixel(), the function used for drawing points and lines, to fill the entire square in the sample_buffer that it would have covered without super sampling.
+		Finally, implementing supersampling for triangles required only minor modifications to my rasterize_triangle() function.
+		By first multiplying the coordinates of the vertices by the sampling factor, I could leave the rest of my function almost unchanged, with it just believing that I was rendering a bigger triangle onto a bigger screen.
+		<p>
 			
+		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="test4_1.png" width="400px"/>
-				  <figcaption>1x Super Sampling.</figcaption>
+				  <figcaption>1x Supersampling.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="test4_4.png" width="400px"/>
-				  <figcaption>4x Super Sampling.</figcaption>
+				  <figcaption>4x Supersampling.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="test4_9.png" width="400px"/>
-				  <figcaption>9x Super Sampling.</figcaption>
+				  <figcaption>9x Supersampling.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="test4_16.png" width="400px"/>
-				  <figcaption>16x Super Sampling.</figcaption>
+				  <figcaption>16x Supersampling.</figcaption>
 				</td>
 			  </tr>
 			</table>
