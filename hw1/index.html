@@ -164,8 +164,49 @@
 			</table>
 		</div>
 		<h2>Task 3: Transforms</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+		I implemented the three transformation matrices (translate, rotate, scale) using the formulas given in lecture. Then, I modified the robot.svg file to make cubeman look like he was skiing. This was done by editing the transformations in the svg file and also adding a few extra triangles for the skis, poles and hat.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="task3_my_robot.png" width="400px"/>
+				  <figcaption>Cubeman Skiing.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="task3_rotated.png" width="400px"/>
+				  <figcaption>Rotating GUI.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
+		<p>
+		Extra Credit: I added the ability to rotate the GUI using the ‘Q’ and ‘E’ keys, as shown above. Before my modification, the transformation stack contained two matrices: svg_to_ndc and ndc_to screen. When any point (or triangle vertex) was being rendered, it would first be multiplied by these matrices to transform it from where it was in the svg file to where it should be displayed to the screen as follows:
+		</p>
+		<p>
+		<code>Vector2D screen_point = ndc_to_screen * svg_to_ndc * svg_point;</code>
+		</p>
+		<p>
+		In order to add the rotation, I added a third matrix to this stack, which applies the rotation before the other two transformations. Thus, the points in svg space are first rotated by my matrix, then sent to normalized device coordinates (NDC) by svg_to_ndc, then transformed to their position on the screen by ndc_to_screen. Since I want the rotation to be done about the center of the image (and not the origin which is at the corner of svg space), a simple rotation matrix would not work. Instead, I have to translate to shift the center of the svg to the origin, then rotate, then translate back, giving the combined matrix as:
+		</p>
+		<p>
+		<code>Matrix3x3 rotM = translate(svg.width / 2, svg.height / 2) * rotate(rotation) * translate(-svg.width/2, -svg.height/2);</code>
+		</p>
+		<p>
+		Now, before rendering, I merge this with the other two matrices with the rotation as the first (rightmost) transformation:
+		</p>
+		<p>
+		<code>Matrix3x3 totalM = ndc_to_screen * svg_to_ndc[current_svg] * rotM;</code>
+		</p>
+		<p>
+		Using this totalM matrix to transform vertices, I can now rotate the image around its center in the GUI.
+		</p>
+		<p>
+		Note: My original design intended for the rotation matrix to be a part of the svg_to_ndc matrix, as this is where it really belongs as it is part of the transformation from svg to ndc space. I planned to apply the rotation to it in the move_view/set_view functions where dragging the image (translating svg_to_ndc) or zooming in (scaling svg_to_ndc) are applied. However, since move_view doesn’t actually remember the current translation or scaling but instead extracts them out of the current svg_to_ndc matrix, having svg_to_ndc be rotated by an off origin rotation would make this process much more complicated. Thus, for the sake of simplicity I made the rotation a separate matrix to avoid interfering with svg_to_ndc.
+		</p>
+		
 		<h2>Task 4: Barycentric coordinates</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
