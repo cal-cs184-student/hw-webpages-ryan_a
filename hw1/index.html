@@ -67,7 +67,7 @@
 		</ol>
 		</p>
 		<p>
-		The use of this function is that the sign of the return value tells me which side of the given vector the point was on, with a negative value meaning left, positive meaning right, and 0 meaning the point was directly on the line (which my implementation considers to be inside of the triangle). Now, I perform three line tests using the position of the center of the pixel and the three vectors winding around the triangle from vertex 0 to 1 to 2. One thing to watch out for here is that triangles could be wound either clockwise or counterclockwise, as shown in figures 1 and 2.
+		The use of this function is that the sign of the return value tells me which side of the given vector the point was on, with a negative value meaning right, positive meaning left, and 0 meaning the point was directly on the line (which my implementation considers to be inside of the triangle). Now, I perform three line tests using the position of the center of the pixel and the three vectors winding around the triangle from vertex 0 to 1 to 2. One thing to watch out for here is that triangles could be wound either clockwise or counterclockwise, as shown in figures 1 and 2.
 		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
