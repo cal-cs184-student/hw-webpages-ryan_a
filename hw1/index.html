@@ -51,49 +51,70 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		To rasterize a single-color triangle, we simply need to find which pixels fall inside the triangle, and set the color of those pixels in the framebuffer to that of the triangle. I implemented this process in three steps:
+		<p>
+		To rasterize a single-color triangle, we need to find which pixel’s centers fall inside the triangle, and then set the color of those pixels in the framebuffer. I implemented this process as follows:
+		</p>
+		<p>
+		First, I find the bounding box of the triangle by taking the minimums and maximums of the x and y coordinates of the triangle's vertices. This bounding box saves me from checking every pixel in the framebuffer, as only pixels within the bounding box can possibly be inside the triangle.
+		</p>
+		<p>
+		Next, I need a way to test if a pixel’s center is within a triangle. I do this by performing three “line tests” to see where the pixel is relative to the three line segments that form the triangle. More specifically, a “line test”, returns the scalar projection of a point onto the vector perpendicular to the vector between two given points. Mathematically, this is done as follows:
 		<ol>
-			<li>Find the bounding box of the triangle by taking the mins and maxs of the x and y coordinates of the triangle's vertices. This saves us from looping through all pixels in the framebuffer, as only pixels withing the bounding box can possibly be inside the triangle.</li>
-			<li>For every pixel in the bounding box, perform three "line tests" to check if the pixel's center point lies within the triangle
-				<ul>
-				<li>What a "line test" does is check if a point (the pixel's center) falls on the left or right hand side of the vector between point 0 and point 1 (two of the triangles vertices). This is done by first rotating the vector from point 0 to point 1 counter-clockwise by 90 degrees as (x,y) -> (-y,x), giving us the vector facing left of our original vector. Then, project the vector between point 0 and the pixel's center point onto this left vector by taking a dot product. If this dot product is positive, the pixel is on the left side of the vector, and if it's negative it's on the right. If it is 0, the pixel's center is directly on the line, which my implementation considers to be inside the triangle.</li>
-				<li>Now, I perform three of these line tests using the three vectors wrapping around the triangle from vertice 0 to 1 to 2. If the triangle has clockwise winding (figure 1), the pixel must be on the right hand side of all three vectors, so all three line tests must return <= 0 for the point to be inside the triangle. If the triangle has counter-clockwise winding (figure 2), all line tests must return >= 0. Thus, if the line tests are either all positive or all negative, my implementation can say that the point is inside the triangle, without ever having to find which way the triangle is wound.</li>
-				</ul>
-			</li>
-			<li>If the pixel's center was found to be inside the triangle, simply color that pixel in the framebuffer.</li>
+			<li>Take in three points: pPixel, p0, p1</li>
+			<li>Rotate the vector from p0 to p1 counterclockwise by 90 degrees</li>
+			<li>Return the dot product of this rotated vector with the vector from p0 to pPixel</li>
+			This can be simplified to the formula: \(-(y1-y0)*(xP-x0) + (x1-x0)*(yP-y0))
 		</ol>
-		My implementation is no slower than one that checks each pixel in the bounding box, as that is what my implementation does.
-		<br><br>An interesting result of this method of triangle rasterization can be seen in figure 4, where a very thin triangle can be split into parts. The explanation for this simply that that missing part of the triangle squeezed in between the pixel's centers in that area, and thus was not rendered.
+		</p>
+		<p>
+		The use of this function is that the sign of the return value tells me which side of the given vector the point was on, with a negative value meaning left, positive meaning right, and 0 meaning the point was directly on the line (which my implementation considers to be inside of the triangle). Now, I perform three line tests using the position of the center of the pixel and the three vectors winding around the triangle from vertex 0 to 1 to 2. One thing to watch out for here is that triangles could be wound either clockwise or counterclockwise, as shown in figures 1 and 2.
+		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="clockwiseTri.png" width="400px"/>
-				  <figcaption>Fig 1: Clockwise wound triangle.</figcaption>
+				  <figcaption>Figure 1: Clockwise wound triangle.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="counterclockwiseTri.png" width="400px"/>
-				  <figcaption>Fig 2: Counter-Clockwise wound triangle.</figcaption>
+				  <figcaption>Figure 2: Counter-Clockwise wound triangle.</figcaption>
 				</td>
 			  </tr>
+			</table>
+		</div>
+		<p>
+		Visually, if a triangle is wound clockwise, to be inside the triangle the point must be on the right side of all three vectors, and thus all line tests should all return <= 0. If a triangle is wound counterclockwise, however, the point must be on the left of all three vectors, so the line tests should all return >= 0. Alternatively, if the point is outside the triangle, the line tests must return both negative and positive values, regardless of the winding of the triangle. Thus, I can say that a point is within the triangle if the line tests are either all negative or all positive. This means my implementation can bypass ever having to solve for which way the triangle is wound.
+		</p>
+		<p>
+		Finally, while looping through every pixel in the bounding box, the last step is to color in the pixels that are inside the triangle by changing their color in the sample buffer. With this done, my implementation was able to render all of the tests shown below.
+		</p>
+		<p>
+		In terms of optimization, my implementation is no slower than one that checks each pixel in the bounding box, as that is what my implementation does. There are other possible optimizations, such the tiled approach described in lecture, but I did not add these to my implementation.
+		</p>
+		<p>
+		An interesting result of triangle rasterization can be seen in figure 4 (test4.svg), where a very thin triangle can end up with parts of it missing. The explanation for this is simply that the missing part of the triangle squeezed in between the pixel's centers in that area, and thus was not rendered.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="test3.png" width="400px"/>
-				  <figcaption>Fig 3: test3.svg.</figcaption>
+				  <figcaption>Figure 3: test3.svg.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="test4.png" width="400px"/>
-				  <figcaption>Fig 4: test4.svg.</figcaption>
+				  <figcaption>Figure 4: test4.svg.</figcaption>
 				</td>
 			  </tr>
 				<tr>
 				<td style="text-align: center;">
 				  <img src="test5.png" width="400px"/>
-				  <figcaption>Fig 5: test5.svg.</figcaption>
+				  <figcaption>Figure 5: test5.svg.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="test6.png" width="400px"/>
-				  <figcaption>Fig 6: test6.svg.</figcaption>
+				  <figcaption>Figure 6: test6.svg.</figcaption>
 				</td>
 			  </tr>
 			</table>
