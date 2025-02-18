@@ -208,7 +208,39 @@
 		</p>
 		
 		<h2>Task 4: Barycentric coordinates</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+		Barycentric coordinates are three numbers (a, b, c) that correspond to each vertex in a triangle and tell you how much “weight” that vertex has in the pixel’s position. The values range from 0 to 1, where 0 means no weight (the pixel is on the line segment between the other two vertices), and 1 means the pixel is directly on the point. Importantly, the three barycentric coordinates must sum to 1. Mathematically, as shown in the diagram below, each barycentric coordinate value is the ratio of how far the pixel is along the perpendicular distance from the vertex to the line formed by the other two vertices.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="task4_diagram.png" width="400px"/>
+				  <figcaption>Diagram of Barycentric Coordinates.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>
+		This diagram also shows an easy way to calculate the barycentric coordinates using the line test function described in part 1. Since the line test already gives us the scalar projection of a point onto the perpendicular to a line. If we use the pixel’s position for one line test and the p0’s position for the other, with both tests using the line between p1 and p2, we can then divide them to get a. The same can be done to be b, and then c can be solved for as 1 - a - b since they must sum to 1. This is how my implementation solves for the barycentric coordinates.
+		</p>
+		<p>
+		The usefulness of barycentric coordinates is that, since they tell you how close a pixel is to each vertex, they also provide a way to blend values between those coordinates. Now, the color at any pixel can be written as a weighted sum of the barycentric coordinates and the colors of each vertex. This is shown in the triangle below. This same method can be used to blend not only colors, but also texture coordinates, normal vectors, or really anything that is defined for each vertex that we want to interpolate for each pixel.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="task4_colored_tri.png" width="400px"/>
+				  <figcaption>Barycentric RGB Triangle.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="task4_color_wheel.png" width="400px"/>
+				  <figcaption>test7.svg.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
