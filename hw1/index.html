@@ -222,7 +222,7 @@
 			</table>
 		</div>
 		<p>
-		This diagram also shows an easy way to calculate the barycentric coordinates using the line test function described in part 1. Since the line test already gives us the scalar projection of a point onto the perpendicular to a line. If we use the pixel’s position for one line test and the p0’s position for the other, with both tests using the line between p1 and p2, we can then divide them to get a. The same can be done to be b, and then c can be solved for as 1 - a - b since they must sum to 1. This is how my implementation solves for the barycentric coordinates.
+		This diagram also shows an easy way to calculate the barycentric coordinates using the line test function described in part 1. Since the line test already gives us the scalar projection of a point onto the perpendicular to a line. If we use the pixel’s position for one line test and the p0’s position for the other, with both tests using the line between p1 and p2, we can then divide them to get a. The same can be done to get b, and then c can be solved for as 1 - a - b since they must sum to 1. This is how my implementation solves for the barycentric coordinates.
 		</p>
 		<p>
 		The usefulness of barycentric coordinates is that, since they tell you how close a pixel is to each vertex, they also provide a way to blend values between those coordinates. Now, the color at any pixel can be written as a weighted sum of the barycentric coordinates and the colors of each vertex. This is shown in the triangle below. This same method can be used to blend not only colors, but also texture coordinates, normal vectors, or really anything that is defined for each vertex that we want to interpolate for each pixel.
