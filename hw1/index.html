@@ -39,8 +39,7 @@
 		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw1-ryana">github.com/cal-cs184-student/sp25-hw1-ryana</a>
 
 		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
+			<img src="task4_colored_tri.png" style="width:50%"/>
 		</figure>
 
 		<!--
@@ -315,6 +314,9 @@
 		<p>
 		With this finished, my rasterizer now has three different sampling techniques available: supersampling (1x, 4x, 9x, 16x), texture pixel sampling (nearest vs bilinear), and level sampling (zero vs nearest vs linear), giving a total 24 possible combinations. As for which technique is best, from my observation supersampling seems to be the best at reducing aliasing, although it also comes at the greatest cost in terms of both extra memory usage and computational cost. Level sampling (both nearest and linear) come at a decent computational cost as well due to having to calculate the barycentric coordinates three times for each pixel (although there is definitely room for optimization here). Personally, bilinear sampling is my favorite as its cost is minimal, while still doing an alright job at removing aliasing.
 		</p>
+		<p>
+		The pictures below show the results of using different pixel and level sampling modes on an image that suffers from some aliasing due to the many thin lines. As you can see, both bilinear pixel sampling and nearest level sampling both do a decent job countering the aliasing on their own, and when used together the resulting image is quite smooth.
+		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -350,9 +352,6 @@
 			</table>
 		
 		</div>
-		<p>
-		The pictures above show the results of using different pixel and level sampling modes on an image that suffers from some aliasing due to the many thin lines. As you can see, both bilinear pixel sampling and nearest level sampling both do a decent job countering the aliasing on their own, and when used together the resulting image is quite smooth.
-		</p>
 		</div>
 	</body>
 </html>
