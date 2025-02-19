@@ -74,11 +74,11 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="clockwiseTri.png" width="400px"/>
-				  <figcaption>Figure 1: Clockwise wound triangle.</figcaption>
+				  <figcaption>Figure 1: Clockwise wound triangle</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="counterclockwiseTri.png" width="400px"/>
-				  <figcaption>Figure 2: Counterclockwise wound triangle.</figcaption>
+				  <figcaption>Figure 2: Counterclockwise wound triangle</figcaption>
 				</td>
 			  </tr>
 			</table>
@@ -100,21 +100,21 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="task1_test3.png" width="400px"/>
-				  <figcaption>Figure 3: test3.svg.</figcaption>
+				  <figcaption>Figure 3: test3.svg</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="task1_test4.png" width="400px"/>
-				  <figcaption>Figure 4: test4.svg.</figcaption>
+				  <figcaption>Figure 4: test4.svg</figcaption>
 				</td>
 			  </tr>
 				<tr>
 				<td style="text-align: center;">
 				  <img src="task1_test5.png" width="400px"/>
-				  <figcaption>Figure 5: test5.svg.</figcaption>
+				  <figcaption>Figure 5: test5.svg</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="task1_test6.png" width="400px"/>
-				  <figcaption>Figure 6: test6.svg.</figcaption>
+				  <figcaption>Figure 6: test6.svg</figcaption>
 				</td>
 			  </tr>
 			</table>
@@ -144,21 +144,21 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="task2_1x.png" width="400px"/>
-				  <figcaption>1x Supersampling.</figcaption>
+				  <figcaption>1x Supersampling</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="task2_4x.png" width="400px"/>
-				  <figcaption>4x Supersampling.</figcaption>
+				  <figcaption>4x Supersampling</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="task2_9x.png" width="400px"/>
-				  <figcaption>9x Supersampling.</figcaption>
+				  <figcaption>9x Supersampling</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="task2_16x.png" width="400px"/>
-				  <figcaption>16x Supersampling.</figcaption>
+				  <figcaption>16x Supersampling</figcaption>
 				</td>
 			  </tr>
 			</table>
@@ -172,11 +172,11 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="task3_my_robot.png" width="400px"/>
-				  <figcaption>Cubeman Skiing.</figcaption>
+				  <figcaption>Cubeman Skiing</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="task3_rotated.png" width="400px"/>
-				  <figcaption>Rotating GUI.</figcaption>
+				  <figcaption>Rotating GUI</figcaption>
 				</td>
 			  </tr>
 			</table>
@@ -216,7 +216,7 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="task4_drawing.png" width="400px"/>
-				  <figcaption>Diagram of Barycentric Coordinates.</figcaption>
+				  <figcaption>Diagram of Barycentric Coordinates</figcaption>
 				</td>
 			  </tr>
 			</table>
@@ -232,19 +232,67 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="task4_colored_tri.png" width="400px"/>
-				  <figcaption>Barycentric RGB Triangle.</figcaption>
+				  <figcaption>Barycentric RGB Triangle</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="task4_color_wheel.png" width="400px"/>
-				  <figcaption>test7.svg.</figcaption>
+				  <figcaption>test7.svg</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<p>
+		After using barycentric coordinates to find a pixel’s uv texture coordinates we run into the problem that these uv coordinates will not line up directly on top of a texel, but will instead be somewhere in the middle of a 2x2 square of texels. This gives us a choice as we can either:
+		<ol>
+			<li>Round to the nearest texel, and return that for the pixel’s color. This is called nearest sampling.</li>
+			<li>Use linear interpolation to perform a weighted sum of all 4 surrounding texels, based on the uv coordinates position in the 2x2 square. This is called bilinear sampling (as we have to interpolate in both the horizontal and vertical axes).</li>
+		</ol>
+		</p>
+		<p>
+		As for my implementation, my triangle rasterizer function passes the uv coordinates and the pixel sampling mode to the function texture::sample, which then decides to call either sample_nearest or sample_bilinear based on the requested sampling mode.
+		</p>
+		<p>
+		Sample_nearest first scales up the uv coordinates to fit the dimensions of the texture, then rounds to the nearest integers and samples the texture there, returning that texel’s color. 
+		</p>
+		<p>
+		Sample_bilinear also scales the uv coordinates up, but then samples at all 4 of the texels surrounding the coordinates. I first interpolate twice along the horizontal axis, blending both the top two and bottom two texel’s colors based on the remainder of u coordinate. Then I interpolate along the vertical axis, blending the resulting top and bottom colors based on the v coordinate’s remainder. After these three interpolations are done, I return the resulting color to be filled in for the pixel.
+		</p>
+		<p>
+		The results of each sampling method at both 1x and 16x supersampling are shown below.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="task5_nearest.png" width="400px"/>
+				  <figcaption>Nearest Sampling (1x SS)</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="task5_bilinear.png" width="400px"/>
+				  <figcaption>Bilinear Sampling (1x SS)</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="task5_nearest16.png" width="400px"/>
+				  <figcaption>Nearest Sampling (16x SS)</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="task5_bilinear16.png" width="400px"/>
+				  <figcaption>Bilinear Sampling (16x SS)</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>
+		As you can see, at 1x, nearest sampling makes the white lines on the globe appear jagged, as well as having them go missing in harsh jumps (as can be seen in the pixel inspector). Bilinear clearly does a better job at both smoothing these lines out and preventing them from going missing in most places. At 16x, the improvement is much less noticeable, as both are now rendering at high enough resolution to capture the full detail of the texture. However, even at 16x I think bilinear appears a bit smoother (again, see pixel inspector).
+		</p>
+		<p>
+		This goes to show that the differences between nearest sampling and bilinear sampling will be most pronounced when the pixel sampling rate is too low to capture every texel in a texture. In this case, bilinear will be able to still include the influence of some texels that nearest would have never displayed. This difference will be even more pronounced when small, high contrast details (like the white lines of the globe) are present, as bilinear will attempt to blend them out while nearest will keep them sharp but end up missing details.
+		</p>
+			
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
