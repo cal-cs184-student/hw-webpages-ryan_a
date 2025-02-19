@@ -294,7 +294,27 @@
 		</p>
 			
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+		When we are far away from a textured object such that any pixel on the screen covers many texels in the texture, the ideal way to downsample would be to take an average of all texels covered by that pixel. However, this would be a bit complicated and slow to do at runtime, so an alternative idea is to precalculate downsampled versions of the texture, called mipmaps. Then at runtime, we can decide which mipmap to use based on how much downsampling we want and then sample from that mipmap. We define mipmaps to have level 0 be the full resolution texture, with every level after downsampling the textures to half the width and height. This gives the concept of level sampling.
+		</p>
+		<p>
+		How I implement this in my triangle rasterizer is by first calculating the barycentric coordinates of the pixel and the interpolated uv coordinates for it as before in task 5. Then, I also calculate the barycentric coordinates and uv coordinates for the pixels directly above and to the right. I pass all of these, along with the requested pixel and level sampling mode to the texture::sample function.
+		</p>
+		<p>
+		In the sample function, if sampling level_zero is requested, the function behaves just as in task 5 and uses the full resolution texture (mipmap 0) along with whichever pixel sampling mode was requested. If level_zero isn’t requested, the function must calculate which mipmaps to use by calling the function get_level.
+		</p>
+		<p>
+		Get_level calculates how many texels the current pixel covers by subtracting its uv coordinates from that of the pixel above and the pixel to the right. This tells us how far we move in uv coordinates when we move one pixel in either direction. After scaling up by the textures native resolution and taking the length of these subtracted uv vectors, we have how many texels we travel over when moving one pixel right or up. This is effectively the width and height of the region that the pixel maps onto in texture space. Call the longer of these two lengths L.
+		</p>
+		<p>
+		With this, we can estimate how much downsampling we want. Since we want the mipmap whose texels will be the same size as our pixel we pick the mipmap level whose texels are L times larger than the native texture. This means we should pick mipmap level log2(L), which is what get_level returns.
+		</p>
+		<p>
+		Now, since this value isn’t an integer and will be somewhere between two mipmap levels, we again have a choice of what to do. If nearest level sampling is requested, I round to the nearest mipmap level and sample that mipmap, still using the requested pixel sampling mode. If linear level sampling is requested, I sample at both mipmap levels, then perform a linear interpolation to get the final color to write to the pixel. From my observation, the main benefit of this linear level sampling is to remove the sometimes noticeable effect of where mipmap levels suddenly change when using level_nearest.
+		</p>
+		<p>
+		With this finished, my rasterizer now has three different sampling techniques available: supersampling (1x, 4x, 9x, 16x), texture pixel sampling (nearest vs bilinear), and level sampling (zero vs nearest vs linear), giving a total 24 possible combinations. As for which technique is best, from my observation supersampling seems to be the best at reducing aliasing, although it also comes at the greatest cost in terms of both extra memory usage and computational cost. Level sampling (both nearest and linear) come at a decent computational cost as well due to having to calculate the barycentric coordinates three times for each pixel (although there is definitely room for optimization here). Personally, bilinear sampling is my favorite as its cost is minimal, while still doing an alright job at removing aliasing.
+		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -318,7 +338,8 @@
 				</td>
 			  </tr>
 			</table>
-			<div style="display: flex; flex-direction: column; align-items: center;">
+		</div>
+		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
@@ -327,8 +348,11 @@
 				</td>
 			  </tr>
 			</table>
+		
 		</div>
-		</div>
+		<p>
+		The pictures above show the results of using different pixel and level sampling modes on an image that suffers from some aliasing due to the many thin lines. As you can see, both bilinear pixel sampling and nearest level sampling both do a decent job countering the aliasing on their own, and when used together the resulting image is quite smooth.
+		</p>
 		</div>
 	</body>
 </html>
