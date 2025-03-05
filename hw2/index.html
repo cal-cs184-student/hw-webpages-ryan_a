@@ -127,8 +127,23 @@
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<p>In the pictures above, there are visible triangles left over after shading. This problem comes from how the surface normals used in shading are constant inside each triangle, making every pixel in a triangle have the same shading. Instead, what we can do is assign each vertex a normal vector. Then, through barycentric coordinates, this normal vector will be smoothly blended for each pixel, resulting in a smooth surface.</p>
+		<p>In order to calculate the normal vector for each vertex, my implementation uses the halfedge data structures to traverse around each neighboring triangle, and uses the cross product of two vectors on the triangle to calculate that triangle’s normal vector scaled by its area. Then, I sum these area-weighted normal, and then normalize the result and return it as that vertex’s normal. A comparison with and without smooth shading is shown below:</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p1_nosmooth.png" height="250px"/>
+				  <figcaption>No Smooth Shading</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p1_smooth.png" height="250px"/>
+				  <figcaption>Smooth Shading</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+			
 		<h3>Part 4: Edge flip</h3>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
