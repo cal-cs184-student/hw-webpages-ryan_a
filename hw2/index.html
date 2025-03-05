@@ -155,7 +155,30 @@
 			</table>
 		</div>
 		<p>My implementation rotates the edge clockwise, along with the faces. My first step is gathering references to all the halfedge data structures that I needed (HalfedgeIters, VertexIters, FaceIters). I then fix the faces and vertices by updating their halfedge to one of the ones they should now be touching. I don’t have to update any edge data structures as they all should still be pointing to the same halfedge. I then fix the half edges by updating their vertex, face, and next pointers where necessary. The only bug I encountered was forgetting to update the vertices’ half edge pointers. The results of edge flipping on the teapot are shown below:</p>
-
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p2_noflips.png" height="300px"/>
+				  <figcaption>No edge flips</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p2_diagram.png" height="300px"/>
+				  <figcaption>A few edge flips</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p2_manyflips.png" height="300px"/>
+				  <figcaption>Many edge flips</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 		<h3>Part 5: Edge split</h3>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
