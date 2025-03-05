@@ -106,8 +106,24 @@
 		<p>\[ (1-t)^2 * p_0 + 2(1-t)t * p_1 + t^2 * p_2 \]</p>
 
 		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>Bezier curves can be extended into bezier surfaces, which contain a 2D grid of n x n control points, which can also be thought of as n bezier curves, each with n points. When given two coordinates (u, v) to evaluate at, we can first evaluate the n bezier curves lying in the “u axis”, using the u coordinate to perform the 1D evaluation as before. Then, we are left with n evaluated points, which we can evaluate in the “v axis” using the given v coordinate to get our final evaluated point.</p>
+		<p>My implementation does this by evaluating the n bezier curves in the “u axis” and placing their results into an array of points. I then use this list of points as a bezier curve, and evaluate it using the given v coordinate. I also had to write a helper function that fully evaluates a 1D bezier curve, which just repeatedly calls a function identical to the one from part 1 until it returns an array of length one. My results are shown below:</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s1p2_teapot.png" width="400px"/>
+				  <figcaption>Teapot</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s1p2_wavycube.png" width="400px"/>
+				  <figcaption>Wavy Cube</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
+			
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 		<h3>Part 3: Area-weighted vertex normals</h3>
