@@ -39,8 +39,7 @@
 		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw2-ryana_hw2">https://github.com/cal-cs184-student/sp25-hw2-ryana_hw2</a>
 
 		<figure>
-			<img src="teapot.png" alt="Teapot" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
+			<img src="mrbeast.png" alt="mrbeast" style="width:50%"/>
 		</figure>
 
 		<!--
@@ -240,21 +239,84 @@
 			</table>
 		</div>
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		<p>For loop subdivision, I followed the recommended steps. First I loop through each vertex in the mesh, and calculate its new position as a weighted sum of its position and the positions of its neighbors. I don’t apply these new positions yet, but store them for the future in the Vertex::newPosition field. Then, I loop through every edge in the mesh, and calculate the position for the soon-to-be-created vertex that will subdivide that edge, again using a weighted sum of the positions of the four neighboring vertices. I store this in the edge::newPosition field.</p>
+		<p>Now, I again loop through every edge, performing an edge_split on every edge in the original mesh. To make sure only original edges are split, I will not split an edge if it’s connected to a new vertex (checking the Vertex::isNew field). After the split is done, turning one edge into four, I need a way to remember which edges are actually new and which just lie on an old edge. To avoid having to recalculate which of the four edges lie on the old edge, I simply have the edge_split function set the edge::isNew field properly for all four edges, as it already knows which lie on the old edge. Since edge_split returns the new vertex, I then fill this vertex’s newPosition in with what had been calculated for it in the edge::newPosition field.</p>
+		<p>Then, I once again loop through every edge, and perform edge_flip on any NEW edge that is connected to one old vertex and one new vertex. I do this by checking the edge::isNew and the two vertex::isNew fields. Originally, I didn’t realize I wasn’t supposed to flip any old edges, which took awhile to debug before I realized it wasn’t a bug but instead faulty logic.</p>
+		<p>Finally, my last step is to loop through all vertices, copying their newPosition field to their actual position. With this, the subdivision is done, and results are shown below.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p4_beast0.png" height="250px"/>
+				  <figcaption>No Subdivision</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p4_beast1.png" height="250px"/>
+				  <figcaption>Subdividing Once</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p4_beast2.png" height="250px"/>
+				  <figcaption>Subdividing Twice</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p4_beast2smooth.png" height="250px"/>
+				  <figcaption>Sub Twice + Smooth Shading</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>Loop subdivision seems to work very well for making meshes smoother. However, one possible problem is that, when used on sharp corners and edges, they are not only smoothed out but also pulled inwards heavily. This poses a problem for meshes that are supposed to have sharp looking edges or meshes where the positions of edges and corners are important (like CAD models). This problem is shown below in the torus, where after subdivision it ends up significantly thinner. However, this can be alleviated by doing many edge splits to add more vertices to the mesh near the old ones so that they aren’t pulled in as far during subdivision. As you can see, this makes the torus better able to retain its original volume.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p4_torusbefore.png" height="250px"/>
+				  <figcaption>Torus Before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p4_torusafter.png" height="250px"/>
+				  <figcaption>Torus After</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p4_torus2before.png" height="250px"/>
+				  <figcaption>Pre-split Torus Before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p4_torus2after.png" height="250px"/>
+				  <figcaption>Pre-split Torus After</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>Another problem of this loop subdivision method is that meshes that look symmetric can end up asymmetric after subdivision, like the cube shown below. The reason for this is that due to the different possible slants of the diagonals, not all the vertices have the same degree, and since vertices with different degrees use different formulas for their new positions, they will end up being pulled differently by the subdivision. More specifically, the vertices with higher degree will be pulled inwards more. To make the cube subdivide symmetrical, I can first split each diagonal edge so that the cube is actually symmetric and all vertices share the same degree. This leaves the subdivided cube perfectly symmetric, although it ends up looking more like a rounded dice than a sphere.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p4_cubeasymbefore.png" height="250px"/>
+				  <figcaption>Cube Before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p4_cubeasymafter.png" height="250px"/>
+				  <figcaption>Cube After</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p4_cubesymbefore.png" height="250px"/>
+				  <figcaption>Pre-split Cube Before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p4_cubesymafter.png" height="250px"/>
+				  <figcaption>Pre-split Cube After</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 		</div>
 	</body>
 </html>
