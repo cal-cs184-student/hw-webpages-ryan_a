@@ -180,8 +180,65 @@
 			</table>
 		</div>
 		<h3>Part 5: Edge split</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p3_diagram.png" height="300px"/>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>Unlike edge flip, edge split has to create new data structures. Specifically, I create three new edges for the left, top, and right edges in the center. I have the old edge become the bottom of the four center edges. I also create 6 new half edges, two new faces, and one new vertex (the center vertex). All of these are created with the provided functions in the HalfEdgeMesh class, which adds the new data structures to their respective lists.</p>
+		<p>Then, like for edge flip, I gather references to all the relevant pre-existing edges, half edges, faces, and vertices. I then update all the necessary pointers for the edges, vertices, faces, and half edges. A bug I ran into was that I forgot to update one of the vertex halfedge pointers. I didn’t notice this bug until implementing loop subdivision in the next part, where after subdividing multiple times, the new positions of a few of the vertices would be way out of place as they thought they were connected to a different edge. To find this bug, and check that there were no other bugs, the GUI’s ability to display the pointers and addresses of each data structure was very helpful. Below are the results after fixing my implementation:</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p3_before.png" height="250px"/>
+				  <figcaption>Before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p3_splits.png" height="250px"/>
+				  <figcaption>A few edge splits</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p3_splitsflips.png" height="250px"/>
+				  <figcaption>Many edges splits and flips</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>Extra Credit: I implemented support for splitting boundary edges. Unlike regular triangles, the boundary faces are allowed to have more than three half edges, so my implementation doesn’t split the boundary face but instead just adds an extra half edge to it as shown in my diagram below. When trying to implement this, one problem I ran into was that I could not get a reference to the half edge labeled h1 (without looping all the way around the possibly large boundary). This meant that I needed to have the original edge become the top instead of the bottom (as I had it for non-boundary splits). This means I never have to access h1 as it’s next still should point to the same half edge. Other than this change, my implementation was similar to before, and was even a bit simpler since there were less new data structures to worry about.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p3_boundarydiagram.png" height="300px"/>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="s2p3_boundarybefore.png" height="250px"/>
+				  <figcaption>Before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="s2p3_boundaryafter.png" height="250px"/>
+				  <figcaption>Boundary edge splits</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
