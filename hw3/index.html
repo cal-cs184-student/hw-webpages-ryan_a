@@ -28,12 +28,12 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Name: Ryan Arlett </div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-ryan_a/">https://cal-cs184-student.github.io/hw-webpages-ryan_a/</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw3-ryana_hw3">https://github.com/cal-cs184-student/sp25-hw3-ryana_hw3</a>
 		
 		<figure>
 			<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
@@ -48,28 +48,28 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		<p>The first step in ray tracing is to first generate the rays that come out of the camera. For each pixel, I generate a fixed number of rays (given by the -s parameter). For each ray, I first sample a random x,y position inside that pixel using a uniform random sampler, then scale these coordinates down to normalized image coordinates (0 to 1), and pass them to my camera->generate_ray function.</p>
+		<p>This function converts the given coordinates into a direction for the new ray, then converts this direction from the camera’s local space to world coordinates using the camera’s transformation matrix. This is the direction for the new ray, and the rays origin is simply set at the camera’s world space position. I also set the ray’s min_t and max_t to the camera’s clipping distances. Now, we want to know what each of these rays is going to hit, which requires ray intersection functions for each primitive in the scene (triangles and spheres).</p>
+		<p>For ray-triangle intersections, I used the Moller-Trumbore algorithm given in discussion, which allows me to efficiently calculate the intersection time as well as the barycentric coordinates of the hit location. After this, I check that the intersection time is valid (within the ray’s min_t and max_t), and also that the barycentric coordinates are valid so we know that the hit location is actually inside the triangle. If these are both true, I fill in the intersection struct to contain the needed information about the hit, like the time, surface normal, and the primitive it hit. For the normal vector, I use the barycentric coordinates to interpolate the triangle’s vertex normals, making sure to normalize the result as it could no longer be normalized after interpolation. I also reduce the ray’s max_t to the time of the intersection so that it can no longer intersect with primitives behind this one.</p>
+		<p>My ray-sphere intersection function uses a quadratic equation to solve for the times of intersection. After first checking if this equation has any solutions (using the quadratic equation), I again check that the times are within the ray’s valid window. If so, I fill in the intersection struct and update the ray’s max_t similarly to before. With this done, my renderer can now draw simple scenes with normal shading. The images below are rendered at 360p with 1 sample per pixel.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="p1_spheres.png" width="480px"/>
 				</td>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
+				  <img src="p1_cow.png" width="480px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
+				  <img src="p1_teapot.png" width="480px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
+				  <img src="p1_banana.png" width="480px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
 			  </tr>
