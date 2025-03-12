@@ -60,36 +60,51 @@
 				</td>
 				<td style="text-align: center;">
 				  <img src="p1_cow.png" width="480px"/>
-				  <figcaption>Caption goes here.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="p1_teapot.png" width="480px"/>
-				  <figcaption>Caption goes here.</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="p1_banana.png" width="480px"/>
-				  <figcaption>Caption goes here.</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 		
 		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<p>Though the scenes above are fairly simple - only having a few thousand triangles at most - they were still quite slow to render, as each ray had to perform an intersection test on every primitive in the scene in linear O(N) time. A much more efficient way to render is to organize primitives into bounding boxes such that a ray only needs to perform intersection tests with the primitives in the boxes that it intersects. By organizing these bounding boxes into a binary search tree, we can reduce the time complexity of the intersection testing to O(log(N)), a massive improvement when we have many triangles.</p>
+		<p>My implementation generates the tree by recursively splitting groups of primitives in half until it reaches a small enough number of primitives per box. I always split along the longest axis of the total bounding box of the primitives to hopefully get the greatest reduction in box surface area. As for the splitting point, I originally went with the average of the primitive’s centroids along the splitting axis. I then sorted the primitives by swapping only the ones that needed to be swapped in a QuickSort like algorithm. While this implementation worked, I found this would sometimes result in heavily one sided trees, especially in the Cornell Box scenes, where the large outside box would stay intertwined with the model in the middle to quite some depth. Thus, I decided to split at the median instead to guarantee an evenly sided tree. To be able to find the median I first have to completely sort the primitives, for which I just used std::sort() to make my life easier. I then split in the middle of this now sorted list of primitives, recursively calling the function on both halves of the list.</p>
+		<p>With the BVH working I could now render much more complicated scenes in a fraction of the time, and could significantly increase the number of rays per pixel to get smoother results. Some complicated models rendered at 360p with 64 samples per pixel are shown below.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p2_beast.png" width="480px"/>
+				</td>
+				<td style="text-align: center;">
+				  <img src="p2_dragon.png" width="480px"/>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p2_lucy.png" width="480px"/>
+				</td>
+				<td style="text-align: center;">
+				  <img src="p2_wall-e.png" width="480px"/>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>For a quantitative look at the performance increase, when rendering the cow model (shown in part 1) at 480x360p with 1 sample per pixel, my renderer took 25.17s with no BVH acceleration and only 0.08s with the BVH. This huge performance increase is helped by the fact that the cow model can be divided quite well into bounding boxes due to its regular geometry. However, for simpler models like the Cornell Box spheres model (also shown in part 1), the BVH acceleration only improved the time from 4.43s to 3.54s when rendering both at 360p with 64 samples per pixel. This shows that for very simple geometry, as well as for models that cannot be divided up nicely like the large triangles of the Cornell Box, the BVH’s performance boost is less significant.</p>
 		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		
 		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		
 		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		
 		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 		
 		<h2>Additional Notes (please remove)</h2>
 		<ul>
