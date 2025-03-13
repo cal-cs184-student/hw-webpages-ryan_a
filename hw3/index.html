@@ -165,14 +165,14 @@
 			<img src="p3/p3_spheres_I_S1_L1.png" width="640px"/>
 		  	<figcaption>Importance Sampling: S=1 L=16</figcaption>
 		</figure>
-		<p>To see the difference between direct and indirect illumination, the images below show each of them separately. The sum of these images would be the full global illumination.</p>
+		<p>To see the difference between direct and indirect illumination, the images below show each of them separately. The sum of these images would be the full global illumination. The indirect lighting was rendered to a max depth of 5 with no russian roulette. As you can see, indirect lighting allows light to reach that were completely dark in direct lighting.</p>
 		<figure>
-			<img src="p3/p3_spheres_I_S1_L1.png" width="640px"/>
-		  	<figcaption>Importance Sampling: S=1 L=16</figcaption>
+			<img src="p4/p4_spheres_S1024_L4_M1_DIRECT.png" width="480px"/>
+		  	<figcaption>Direct Only: S=1024 L=4</figcaption>
 		</figure>
 		<figure>
-			<img src="p3/p3_spheres_I_S1_L1.png" width="640px"/>
-		  	<figcaption>Importance Sampling: S=1 L=16</figcaption>
+			<img src="p4/p4_spheres_S1024_L4_M5_INDIRECT.png" width="480px"/>
+			<figcaption>Indirect Only: S=1024 L=4 M=5</figcaption>
 		</figure>
 		<p>The images below show the contributions of each bounce of light. The left images show just that depth of light (accumulate bounces disabled), while the right images have accumulate bounces enabled. As you can see, the 2nd and 3rd bounces help to fill in the shadows on the bottom of the bunny and the corners of the box. They also provide a noticeable reflection of the red and blue walls onto the sides of the bunny, which is a realistic effect that we missed with just direct lighting. All images below were rendered with S=1024, L=1, and russian roulette disabled so that all rays reached their requested depth.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
