@@ -56,18 +56,18 @@
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p1_spheres.png" width="480px"/>
+				  <img src="p1/p1_spheres.png" width="480px"/>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p1_cow.png" width="480px"/>
+				  <img src="p1/p1_cow.png" width="480px"/>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p1_teapot.png" width="480px"/>
+				  <img src="p1/p1_teapot.png" width="480px"/>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p1_banana.png" width="480px"/>
+				  <img src="p1/p1_banana.png" width="480px"/>
 				</td>
 			  </tr>
 			</table>
@@ -81,25 +81,114 @@
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p2_beast.png" width="480px"/>
+				  <img src="p2/p2_beast.png" width="480px"/>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p2_dragon.png" width="480px"/>
+				  <img src="p2/p2_dragon.png" width="480px"/>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p2_lucy.png" width="480px"/>
+				  <img src="p2/p2_lucy.png" width="480px"/>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p2_wall-e.png" width="480px"/>
+				  <img src="p2/p2_wall-e.png" width="480px"/>
 				</td>
 			  </tr>
 			</table>
 		</div>
 		<p>For a quantitative look at the performance increase, when rendering the cow model (shown in part 1) at 480x360p with 1 sample per pixel, my renderer took 25.17s with no BVH acceleration and only 0.08s with the BVH. This huge performance increase is helped by the fact that the cow model can be divided quite well into bounding boxes due to its regular geometry. However, for simpler models like the Cornell Box spheres model (also shown in part 1), the BVH acceleration only improved the time from 4.43s to 3.54s when rendering both at 360p with 64 samples per pixel. This shows that for very simple geometry, as well as for models that cannot be divided up nicely like the large triangles of the Cornell Box, the BVH’s performance boost is less significant.</p>
 		<h2>Part 3: Direct Illumination</h2>
-		
+		<p>Now that my renderer can quickly calculate ray intersections, I need a way to calculate the direct lighting at those intersection points. The mathematical answer to this question is the integral of all the incoming radiance over the hemisphere at that point, multiplied by the material’s bidirectional scattering distribution function (BSDF) to convert incoming radiance to outgoing radiance in the direction of the camera. However, since I cannot possibly solve this integral, I must estimate its answer with a Monte-Carlo estimator.</p>
+		<p>The naive way to perform this estimate is to sample the incoming radiance uniformly over the hemisphere. My implementation does this by generating a randomly sampled direction for the new ray in the hemisphere, then converting it from local coordinates to world coordinates, then shooting the new ray in this direction. If this ray intersects the scene, I then get the incoming radiance from that direction using the emission property of the material it intersects. I then multiply by cos(θ) from Lambert's cosine law and divide by the probability of sampling a ray in that direction (which is just 1/2π since the sampling is uniform). Finally, I multiply by the BSDF to get the outgoing radiance to the camera. After taking the average of many of these estimated outgoing radiances, my Monte-Carlo estimate is complete and I am able to render direct lighting, as shown below. The L parameter gives how many of the new direct lighting sampling rays I use, and the S parameter is samples per pixel as before.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_bunny_H_S16_L8.png" width="640px"/>
+				  <figcaption>Hemisphere Sampling: S=16 L=8</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_bunny_H_S64_L32.png" width="640px"/>
+				  <figcaption>Hemisphere Sampling: S=64 L=32</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_spheres_H_S16_L8.png" width="640px"/>
+				  <figcaption>Hemisphere Sampling: S=64 L=32</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>As you can see, there is significant noise in these images, especially at lower L. This is because the chance of any light sampling ray hitting the area light is low, so only a few of the rays actually contribute anything to the outgoing radiance. This gives a lot of noise as there is a decent chance of not having any light rays hit the area light at all. From this, we can see that it makes much more sense to send all our lighting rays in the direction of lights instead of wasting them uniformly over the hemisphere where most of them will end up hitting an object with no emission. This gives the idea of light importance sampling, which I implement as follows:</p>
+		<p>For every area light in the scene, I generate a L random rays pointing towards it, and also record the incoming radiance from the light in that direction and the probability of sampling a ray in that direction. Then, I perform an intersection test to ensure that no object lies in between the hit point and the light. After this, I can use the same formula as before to perform a Monte-Carlo estimate of the outgoing radiance reflected from that area light. For point lights, my logic is the same, however I only take one sample for them as there is no reason to take L samples as they would all lie in the same direction. After summing up the contributions from every light, my importance sampling implementation is complete. As you can see below, this drastically reduces the noise in the renders, and also allows me to render scenes with point lights.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_bunny_I_S16_L8.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=16 L=8</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_bunny_I_S64_L32.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=64 L=32</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_spheres_I_S16_L8.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=64 L=32</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_dragon_I_S16_L8.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=64 L=32</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_wall-e_I_S16_L8.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=64 L=32</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>With importance sampling, at points where the entire area light is unobscured we would expect little noise even with a low L, as all the light rays will hit the light and get return similar radiances. However, at points such as soft shadows where the light is partially obscured, we get noise as some of the light rays are blocked while others aren’t. This requires L to be decently large to average this out and remove noise in soft shadows. As you can see in the images below, going up to L=64 is required to reduce noise in the soft shadow regions.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_spheres_I_S1_L1.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=1 L=1</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_spheres_I_S1_L4.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=1 L=4</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_spheres_I_S1_L16.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=1 L=16</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p3/p3_spheres_I_S1_L64.png" width="640px"/>
+				  <figcaption>Importance Sampling: S=1 L=64</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>Comparing these two implementations, importance sampling beats uniform sampling in every way. Since both are estimating the same integral, they have the same expected results at large L, but importance sampling is able to converge much quicker by only sampling from the rays that are going to contribute to the outgoing radiance (the ones going towards lights). This means importance sampling can produce the same images with a far lower L, which also makes it run much faster. Apart from the difference in noise, the only difference between the sets of images is that uniform sampling produces a glow around the light at the top of the Cornel Box while importance sampling doesn’t. This is just due to a slight difference in implementation where my uniform sampling implementation allows light to come out of the top side of the light, while importance sampling doesn’t.</p>
 		<h2>Part 4: Global Illumination</h2>
 		
 		<h2>Part 5: Adaptive Sampling</h2>
