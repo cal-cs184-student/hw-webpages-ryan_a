@@ -342,7 +342,7 @@
 			</table>
 		</div>
 		<h2>Part 5: Adaptive Sampling</h2>
-		<p></p>
+		<p>From the images above, you can see that some areas of an image can converge with fewer samples per pixel than others. This motivates the idea of adaptive sampling, where we stop sampling pixels early if we decide they have already converged. My algorithm uses two new parameters: the number of samples per batch, and a tolerance for deciding if a pixel has converged. For each pixel, I sample a batch of rays, summing up their illumination and illumination squared. With these metrics, I am able to calculate the mean and variance of all the samples so far, from which I use the provided equations that perform a z-test, getting a confidence interval in whether or not our mean is within the tolerance of the true mean. If it is within the tolerance, I end the sampling for that pixel early, otherwise I sample another batch, continuing either until it converges or until we hit the maximum number of samples given by the S parameter.</p>
 		<p>The renderer also outputs images showing how many samples were taken per pixel, with red being the most and blue being the least. From this, we can see what areas of images converge faster. Also, I mentioned earlier that russian roulette increases variance, and we can now verify that as seen below. All images rendered at S=2048 L=1 M=5.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -368,21 +368,21 @@
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p5/p5_dragon_S2048_L1_M5_RR.png" width="480px"/>
+				  <img src="p5/p5_dragon_S2048_L1_M5.png" width="480px"/>
 		  		  <figcaption>Dragon: Russian Roulette Disabled</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p5/p5_bunny_S2048_L1_M5_RR_rate.png" width="480px"/>
+				  <img src="p5/p5_dragon_S2048_L1_M5_rate.png" width="480px"/>
 		  		  <figcaption>/<== Pixel Sampling Rate</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p5/p5_wall-e_S2048_L1_M5_RR.png" width="480px"/>
+				  <img src="p5/p5_wall-e_S2048_L1_M5.png" width="480px"/>
 		  		  <figcaption>Dragon: Russian Roulette Disabled</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p5/p5_bunny_S2048_L1_M5_RR_rate.png" width="480px"/>
+				  <img src="p5/p5_wall-e_S2048_L1_M5_rate.png" width="480px"/>
 		  		  <figcaption>/<== Pixel Sampling Rate</figcaption>
 				</td>
 			  </tr>
