@@ -156,24 +156,44 @@
 		<h2>Part 4: Global Illumination</h2>
 		<p>While direct lighting looked mostly realistic, it ignores the possibility of light bouncing more than once between our camera and the light sources. One effect of this is that it makes the shadows in scenes darker than they should be, as the light that would have otherwise bounced around the object to get to that area is ignored. To get a fully realistic result, global illumination considers multiple bounce paths, which I implement as follows:</p>
 		<p>First, I set each initial rays depth to zero before it leaves the camera. Then, at each intersection, I sample one new ray using the materials sampler (cosine weighted for diffuse materials) and assign a depth one greater to this ray. I then cast this ray into the world and recursively call this same function on its intersection. This recursion continues until we are one depth below the maximum requested depth (-m parameter), at which point I just return the direct illumination at that point using the function from part 3. The previous bounces then use their BDSF, cosine, and probability distribution terms to convert the radiance returned by the ray one deeper than them to the radiance they reflect back. If the accumulate bounces setting is on, I also add the direct lighting at that point to the returned radiance. Thus, every sample ends up taking M bounces, summing up how much direct lighting is reflected back along that path to the camera.</p>
-		<p>This provides very realistic results, however we would have to set M to infinity to account for all possible light paths. Since this would run forever, we can instead use “Russian Roulette Termination” to terminate most of the rays at lower depths and only let a few continue to the deep depths. To do this, I modified my function to only continue the recursion with probability 0.65, and if it does continue I increase its returned value by a factor of (1 / 0.65) to keep the result unbiased. This allows rendering to a very high M without it taking forever. However, it does increase variance in the image by adding this extra random factor which will slow down the convergence. Below are some images rendered with full global illumination, going to very high maximum depths with russian roulette.</p>
-		<figure>
-			<img src="p3/p3_spheres_I_S1_L1.png" width="640px"/>
-		  	<figcaption>Importance Sampling: S=1 L=16</figcaption>
-		</figure>
-		<figure>
-			<img src="p3/p3_spheres_I_S1_L1.png" width="640px"/>
-		  	<figcaption>Importance Sampling: S=1 L=16</figcaption>
-		</figure>
-		<p>To see the difference between direct and indirect illumination, the images below show each of them separately. The sum of these images would be the full global illumination. The indirect lighting was rendered to a max depth of 5 with no russian roulette. As you can see, indirect lighting allows light to reach that were completely dark in direct lighting.</p>
-		<figure>
-			<img src="p4/p4_spheres_S1024_L4_M1_DIRECT.png" width="480px"/>
-		  	<figcaption>Direct Only: S=1024 L=4</figcaption>
-		</figure>
-		<figure>
-			<img src="p4/p4_spheres_S1024_L4_M5_INDIRECT.png" width="480px"/>
-			<figcaption>Indirect Only: S=1024 L=4 M=5</figcaption>
-		</figure>
+		<p>This provides very realistic results, however we would have to set M to infinity to account for all possible light paths. Since this would run forever, we can instead use “Russian Roulette Termination” to terminate most of the rays at lower depths and only let a few continue to the deep depths. To do this, I modified my function to only continue the recursion with probability 0.65 (so 0.35 chance of termination), and if it does continue I increase its returned value by a factor of (1 / 0.65) to keep the result unbiased. This allows rendering to a very high M without it taking forever. However, it does increase variance in the image by adding this extra random factor which will slow down the convergence.</p>
+		<p>Here are my results for global illumination. The three images below are rendered at S=1024, L=1, M=5, without russian roulette.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p4/p4_spheres_S1024_L1_M5.png" width="480px"/>
+				</td>
+				<td style="text-align: center;">
+				  <img src="p4/p4_dragon_S1024_L1_M5.png" width="480px"/>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p4/p4_wall-e_S1024_L1_M5.png" width="480px"/>
+				</td>
+				<td style="text-align: center;">
+				  <img src="p4/p4_blob_S1024_L1_M5.png" width="480px"/>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<p>To see the difference between direct and indirect illumination, the images below show each of them separately. The sum of these images would be the full global illumination image shown above. The indirect lighting was rendered to a max depth of 5 with no russian roulette. As you can see, indirect lighting allows light to reach areas that were completely dark in direct lighting.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="p4/p4_spheres_S1024_L4_M1_DIRECT.png" width="480px"/>
+		  		  <figcaption>Direct Only: S=1024 L=4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="p4/p4_spheres_S1024_L4_M5_INDIRECT.png" width="480px"/>
+				  <figcaption>Indirect Only: S=1024 L=4 M=5</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+			
 		<p>The images below show the contributions of each bounce of light. The left images show just that depth of light (accumulate bounces disabled), while the right images have accumulate bounces enabled. As you can see, the 2nd and 3rd bounces help to fill in the shadows on the bottom of the bunny and the corners of the box. They also provide a noticeable reflection of the red and blue walls onto the sides of the bunny, which is a realistic effect that we missed with just direct lighting. All images below were rendered with S=1024, L=1, and russian roulette disabled so that all rays reached their requested depth.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -240,7 +260,7 @@
 			</table>
 		</div>
 
-		<p>Here is the same bunny at different depths again but this time with russian roulette enabled.</p>
+		<p>Here is the same bunny at different depths again, but with russian roulette enabled.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -280,59 +300,48 @@
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M0_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S1_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=1</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M1_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S2_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=2</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M2_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S4_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=4</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M3_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S8_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=8</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M4_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S16_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=16</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M4_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S64_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=64</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M4_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S256_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=256</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="p4/p4_spheres_I_S1024_L1_M4_O1_RR.png" width="480px"/>
+				  <img src="p4/p4_spheres_S1024_L4_M100_RR.png" width="480px"/>
 		  		  <figcaption>S=1024</figcaption>
 				</td>
 			  </tr>
 		</div>
 		<h2>Part 5: Adaptive Sampling</h2>
 		
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
 		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
 		</div>
 	</body>
 </html>
