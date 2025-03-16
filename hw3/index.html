@@ -44,7 +44,7 @@
 		-->
 
 		<h2>Overview</h2>
-		In this project I have implemented path tracing for rendering images with realistic lighting. I started by generating rays and calculating their intersections with geometry in the scene. I then made my implementation run much faster with a bounding volume hierarchy. Finally, I used Monte Carlo estimators to implement direct and indirect lighting in my images. Out of all the projects so far I would say this is easily my favorite just because of how cool the results were. It was also interesting to apply the light transfer equations from class to a real project and to see them work.
+		In this project I have implemented path tracing for rendering images with realistic lighting. I started by generating rays and calculating their intersection points with geometry in the scene. I then made my implementation run much faster with a bounding volume hierarchy. Finally, I used Monte Carlo estimators to implement direct and indirect lighting in my images. Out of all the projects so far I would say this is easily my favorite just because of how cool the results were. It was also interesting to apply the light transfer equations from class to a real project and to see them work.
 
 		<h2>Part 1: Ray Generation and Scene Intersection</h2>
 		<p>The first step in ray tracing is to first generate the rays that come out of the camera. For each pixel, I generate a fixed number of rays (given by the -s parameter). For each ray, I first sample a random x,y position inside that pixel using a uniform random sampler, then scale these coordinates down to normalized image coordinates (0 to 1), and pass them to my camera->generate_ray function.</p>
