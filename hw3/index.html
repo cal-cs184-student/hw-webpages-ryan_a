@@ -157,26 +157,19 @@
 		<p>First, I set each initial rays depth to zero before it leaves the camera. Then, at each intersection, I sample one new ray using the materials sampler (cosine weighted for diffuse materials) and assign a depth one greater to this ray. I then cast this ray into the world and recursively call this same function on its intersection. This recursion continues until we are one depth below the maximum requested depth (-m parameter), at which point I just return the direct illumination at that point using the function from part 3. The previous bounces then use their BDSF, cosine, and probability distribution terms to convert the radiance returned by the ray one deeper than them to the radiance they reflect back. If the accumulate bounces setting is on, I also add the direct lighting at that point to the returned radiance. Thus, every sample ends up taking M bounces, summing up how much direct lighting is reflected back along that path to the camera.</p>
 		<p>This provides very realistic results, however we would have to set M to infinity to account for all possible light paths. Since this would run forever, we can instead use “Russian Roulette Termination” to terminate most of the rays at lower depths and only let a few continue to the deep depths. To do this, I modified my function to only continue the recursion with probability 0.65 (so 0.35 chance of termination), and if it does continue I increase its returned value by a factor of (1 / 0.65) to keep the result unbiased. This allows rendering to a very high M without it taking forever. However, it does increase variance in the image by adding this extra random factor which will slow down the convergence.</p>
 		<p>Here are my results for global illumination. The three images below are rendered at S=1024, L=1, M=5, without russian roulette.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="p4/p4_big_bunny.png" width="640px"/>
-				</td>
-				<td style="text-align: center;">
-				  <img src="p4/p4_big_wall-e.png" width="640px"/>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="p4/p4_big_banana.png" width="640px"/>
-				</td>
-				<td style="text-align: center;">
-				  <img src="p4/p4_big_banana.png" width="640px"/>
-				</td>
-			  </tr>
-			</table>
-		</div>
+		<figure><img src="p4/p4_big_bunny.png" width="640px"/></figure>
+		<figure><img src="p4/p4_big_wall-e.png" width="640px"/></figure>
+		<figure><img src="p4/p4_big_banana.png" width="640px"/></figure>
+		<figure><img src="p4/p4_big_spheres.png" width="640px"/></figure>
+			
+
+				  
+
+
+				  
+
+				  
+
 		<p>To see the difference between direct and indirect illumination, the images below show each of them separately. The sum of these images would be the full global illumination image shown above. The indirect lighting was rendered to a max depth of 5 with no russian roulette. As you can see, indirect lighting allows light to reach areas that were completely dark in direct lighting.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
