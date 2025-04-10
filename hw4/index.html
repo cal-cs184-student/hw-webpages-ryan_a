@@ -89,8 +89,82 @@
 		</div>
 
 		<h2>Part 2: Simulation via numerical integration</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>In each simulation step of the cloth sim I first add up the total force on each point mass. This includes both global forces applying to all point masses (like gravity) as well as the force from every spring from hooke’s law. With this calculated, I then apply Verlet integration to calculate the new positions of each point mass. Finally, for the sake of stability I require all springs to be stretched by no more than 10%. If they are beyond this limit, I pull their point masses closer together to bring it to 10%. This completes a basic cloth simulation, although it cannot handle object collisions yet.</p>
+		<p>Using different parameters gives different results for the behavior of the cloth. At a low spring constant (< 500 N/m), the cloth falls with very little “stretchiness”, only being constrained by the 10% stretching limit. This results in the cloth falling with little resistance, then stopping suddenly and generating interesting wave patterns the moment the springs start to hit their limits, before finally coming to rest. At a high spring constant, the springs never hit their limits and thus don’t generate the same ripples and the cloth just hangs taught like a trampoline. A comparison is shown below, with images near the start, middle, and once it has come to rest.</p>
 
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/k_low_start.png" width="350px"/>
+					  <figcaption>ks=50 N/m Beginning</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p2/k_high_start.png" width="350px"/>
+					  <figcaption>ks=50kN/m Beginning</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/k_low_mid.png" width="350px"/>
+					  <figcaption>ks=50 N/m Middle</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p2/k_high_start.png" width="350px"/>
+					  <figcaption>ks=50kN/m Middle</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/k_low_end.png" width="350px"/>
+					  <figcaption>ks=50 N/m End</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p2/k_high_end.png" width="350px"/>
+					  <figcaption>ks=50kN/m End</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+			
+		<p>Changing the density of the cloth increases the strength of gravity relative to the springs. Mathematically, increasing density is equivalent to decreasing the spring constant, as the acceleration from the springs is scaled down by the point’s mass (by a=F/m), while gravity is unaffected as it is an acceleration. Thus, an increase in m simply scales down the acceleration from the springs, giving the same results as a decrease in ks. For an extra comparison, below you can see that increasing the density causes the cloth to hang lower as the springs are now weaker against gravity. Also see that at a very high density (1000g/cm^2), interesting patterns emerge as the springs again hit their limits.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/m_low.png" width="350px"/>
+					  <figcaption>Low Density (2 g/cm2)</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/m_low.png" width="350px"/>
+					  <figcaption>High Density (150 g/cm2)</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/m_low.png" width="350px"/>
+					  <figcaption>Very High Density (1 kg/cm2)</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>Changing the damping affects how slowly the cloth falls, although ultimately it comes to the same resting position. However, with zero damping the cloth never loses energy and continues to oscillate, leading to interesting results as shown below.</p>
+		<figure>
+			<img src="p2/d_zero.png" width="450"/>
+			<figcaption>Zero Damping</figcaption>
+		</figure>
+
+		<p>Finally, here is the cloth after coming to rest on default parameters.</p>
+		<figure>
+			<img src="p2/default.png" width="450"/>
+			<figcaption>Default Settings</figcaption>
+		</figure>
+
+
+
+			
 		<h2>Part 3: Handling collisions with other objects</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
