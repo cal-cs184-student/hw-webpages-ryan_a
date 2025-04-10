@@ -166,8 +166,27 @@
 
 			
 		<h2>Part 3: Handling collisions with other objects</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<p>For sphere collisions, I first check if the point mass’s position is inside the sphere by checking its distance to the sphere’s center. If so, I project the position onto the surface of the sphere. I then correct the position to be equal to the last position plus the correction vector needed to bring it to the projected point. To add some friction, the correction vector is first scaled by (1-friction) so the new position ends up between the projected point and last_position.</p>
+		<p>For plane collisions, I check if a collision has occurred by seeing if position and last_position are on opposite sides of the plane. If so, I find where the new position should be if position is projected onto the plane, then pulled a bit further by a small constant to keep it slightly on the side of the plane that last_position was on. Like with spheres, I then update the position to be last_position plus the correction vector needed to bring last_position to the projected point, scaled by (1-friction).</p>
+		<p>In my main cloth simulation function, I then apply these collision checks to every point after completing Verlet integration, but before the 10% stretching limit constraint. Here is the cloth laying on the sphere at three different spring constants.</p>
+		<figure>
+			<img src="p3/500.png" width="450"/>
+			<figcaption>ks=500 N/m</figcaption>
+		</figure>
+		<figure>
+			<img src="p3/5000.png" width="450"/>
+			<figcaption>ks=500 N/m</figcaption>
+		</figure>
+		<figure>
+			<img src="p3/50000.png" width="450"/>
+			<figcaption>ks=500 N/m</figcaption>
+		</figure>
+		<p>Here is the cloth lying on a plane (Phong shader used).</p>
+		<figure>
+			<img src="p3/plane.png" width="450"/>
+			<figcaption>Plane</figcaption>
+		</figure>
+			
 		<h2>Part 4: Handling self-collisions</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
