@@ -244,21 +244,87 @@
 			
 			
 		<h2>Part 5: Shaders</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>(Optional) Part 6: Extra Credit - Additional cloth simulation features!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		<p>A shader is a program to be run on the GPU. The GPU will run the program simultaneously on many cores, each doing the same operations on different data. The type of data in the input and output buffers is arbitrary, and could be anything in the case of a compute shader.</p>
+		<p>As for rendering, a vertex shader operates on vertex data, and thus does per vertex operations such as applying the global transformation matrix to the local vertex positions, or slightly shifting the vertex in the case of displacement mapping. A fragment shader takes in per-pixel data (or really per fragment which is often the same as a pixel), and does per pixel operations, such as calculating lighting and sampling textures. The input data for the pixel shader is interpolated from the vertex shader’s output using the pixel’s barycentric coordinates (hw1). As an aside, there are also other rendering shaders that can be used between the vertex shader and pixel shaders to do things such as tessellation.</p>
+		<p>One common pixel shader is Blinn-Phong shading, a lighting effect that combines three types of lighting: ambient lighting applied equally to all points, diffuse lighting based on lambert’s cosine law, and specular lighting that adds specular highlights to locations that are near the right angle to reflect light from the light source to the viewer like a mirror. This tries to approximate real world effects, though it just uses arbitrary equations with arbitrary constants. By varying the constants, one can make different materials appear more specular or more diffuse (matte). My Blinn-Phong shader is shown below, with the different lighting types separated.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p5/phong_amb.png" width="350px"/>
+					  <figcaption>Ambient</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p5/phong_diff.png" width="350px"/>
+					  <figcaption>Diffuse</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p5/phong_spec.png" width="350px"/>
+					  <figcaption>Specular</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p5/phong_full.png" width="350px"/>
+					  <figcaption>All Three Together</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>I also made a texture shader, which just samples at the uv coordinates and sets the output color to that sample. (texture png from https://www.colorland.com/us/inspirations/landscape-photography-tips-and-techniques)</p>
+		<figure>
+			<img src="p5/tex.png" width="450"/>
+		</figure>
+		<p>Bump and displacement shaders can be used to add fine details to models. Bump mapping does this by modifying the normal in the pixel shader based on the “slope” (really the gradient) of the height map. Thus, by shifting the normal vector it allows lighting to show small details that aren’t actually present in the mesh. Displacement mapping takes this one step further by also shifting the vertex positions based on the height map in the vertex shader. While this allows the height map to physically shift the vertices, it could produce ugly results if the height map has smaller/higher frequency details than the density of vertices in the mesh can show (think aliasing). My bump and displacement shaders are compared below. As you can see, the bricks are physically shifted outwards in the displacement shader, while the bump shader only emulates them with lighting.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p5/bump.png" width="350px"/>
+					  <figcaption>Bump Mapping</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p5/disp.png" width="350px"/>
+					  <figcaption>Displacement Mapping</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>As I alluded to earlier, the displacement shader requires a decent vertex density to be able to capture the detail of the height map without aliasing. The two methods are compared at  different mesh resolutions below. As you can see, at the lower vertex density setting displacement mapping basically produces gibberish, but at the higher setting it produces a convincing result. Since bump mapping doesn’t try to move the vertices, it doesn’t care nearly as much about vertex density, and so it looks similar at both settings.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p5/bump16.png" width="350px"/>
+					  <figcaption>Bump Mapping (16)</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p5/disp.png" width="350px"/>
+					  <figcaption>Displacement Mapping (16)</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p5/bump16.png" width="350px"/>
+					  <figcaption>Bump Mapping (128)</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p5/disp.png" width="350px"/>
+					  <figcaption>Displacement Mapping (128)</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>I also implemented a mirror shader that samples from a cubemap background to show interesting environment reflections. It simply takes the ray between the object and the camera, reflects it across the normal vector, and samples the cubemap in that direction.</p>
+		<figure>
+			<img src="p5/mirror_ball.png" width="450"/>
+		</figure>
+		<figure>
+			<img src="p5/mirror_both.png" width="450"/>
+		</figure>
+		<figure>
+			<img src="p5/mirror_wrap.png" width="450"/>
+		</figure>
 		</div>
 	</body>
 </html>
