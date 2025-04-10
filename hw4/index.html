@@ -188,8 +188,61 @@
 		</figure>
 			
 		<h2>Part 4: Handling self-collisions</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		<p>For implementing self collisions, I first insert all the point masses up into a hash table based on the 3D box they are in. My hash function does this by subtracting fmod(coordinates) from the point’s coordinates to round it to the nearest box, then hashing that box’s coordinates. This allows for faster self collision testing as a point only has to be tested against others in its box. Thus, for every point, I test it against every other point in its box, and if they are too close (less than the thickness parameter), I shift the original point until they are far enough away. Here are my results for a simulation at default settings:</p>
+		<figure>
+			<img src="p4/1.png" width="450"/>
+		</figure>
+		<figure>
+			<img src="p4/2.png" width="450"/>
+		</figure>
+		<figure>
+			<img src="p4/3.png" width="450"/>
+		</figure>
+		<figure>
+			<img src="p4/4.png" width="450"/>
+		</figure>
+		<figure>
+			<img src="p4/5.png" width="450"/>
+		</figure>
+		<p>The effects of changing the spring constants are shown below. As you can see, upping the spring constant results in less folds in the cloth (due to the bending springs being stronger). Conversely, decreasing the spring constant gives more folds.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/k_high_1.png" width="350px"/>
+					  <figcaption>High ks</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p2/k_low_1.png" width="350px"/>
+					  <figcaption>Low ks</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/k_high_2.png" width="350px"/>
+					  <figcaption>High ks</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p2/k_low_2.png" width="350px"/>
+					  <figcaption>Low ks</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  <img src="p2/k_high_3.png" width="350px"/>
+					  <figcaption>High ks</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  <img src="p2/k_low_3.png" width="350px"/>
+					  <figcaption>Low ks</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>As for changing the density, as I described earlier, increasing the density is mathematically equivalent to decreasing the spring constant. I tested this relationship again here and it once again held true. Thus, increasing density gives more folds and decreasing the density gives less folds with the simulations ending up the same as above.</p>
+		
+			
+			
 		<h2>Part 5: Shaders</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
